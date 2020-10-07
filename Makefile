@@ -14,6 +14,8 @@ release-tag:
 	git push origin ${NOW_VERSION}
 
 release-branch:
+	git checkout develop
+	git pull origin develop
 	git checkout -b releases/${NOW_VERSION}
 
 # Terraform
