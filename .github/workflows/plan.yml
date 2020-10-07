@@ -1,0 +1,35 @@
+name: Terraform plan
+
+on:
+  push:
+    branches:
+      - develop
+      - 'releases/**'
+  pull_request:
+    branches:
+      - develop
+      - 'releases/**'
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install tfnotify
+        run: |
+          wget https://github.com/mercari/tfnotify/releases/download/v0.7.0/tfnotify_linux_amd64.tar.gz
+          tar xvzf tfnotify_linux_amd64.tar.gz
+          chmod 777 tfnotify
+
+      - name: Terraform init
+        run: make terraform-init ENVIRONMENT=template
+
+      - name: Terraform Format
+        run: make terraform-fmt ENVIRONMENT=template | ./tfnotify --config ./tfnotifies/default.yml fmt
+        env:
+          GITHUB_TOKEN: ${{ secrets.TFNOTIFY_GITHUB_TOKEN }}
+
+      - name: Terraform plan
+        run: make terraform-plan ENVIRONMENT=template | ./tfnotify --config ./tfnotifies/default.yml plan
+        env:
+          GITHUB_TOKEN: ${{ secrets.TFNOTIFY_GITHUB_TOKEN }}

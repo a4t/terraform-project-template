@@ -1,0 +1,12 @@
+version: "3"
+services:
+  terraform: &terraform
+    image: hashicorp/terraform:0.13.2
+    volumes:
+      - ./terraform/:/terraform
+
+  terraform-template:
+    <<: *terraform
+    working_dir: /terraform/environments/template
+    env_file:
+      - config/aws.env.template
